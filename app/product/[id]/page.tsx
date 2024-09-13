@@ -1,21 +1,3 @@
-// import { productData } from '../../../data/products';
-// import ProductDetail from '../../../components/ProductDetail';
-
-// const ProductDetailPage = ({ params }: { params: { id: string } }) => {
-//   const product = productData.find((p) => p.id === Number(params.id));
-
-//   if (!product) {
-//     return <div>Product not found</div>;
-//   }
-
-//   return (
-//     <ProductDetail product={product}/>
-//   );
-// };
-
-// export default ProductDetailPage;
-
-// pages/product/[id].tsx
 
 import { productData } from '../../../data/products';
 import ProductDetail from '../../../components/ProductDetail';

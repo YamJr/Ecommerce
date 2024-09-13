@@ -1,3 +1,3 @@
-import store from './store'; // Ensure this is the correct path
+import store from './store'; 
 
 export type RootState = ReturnType<typeof store.getState>;

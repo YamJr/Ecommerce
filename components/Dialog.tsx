@@ -1,8 +1,10 @@
-// components/CartDialog.tsx
+// 'use client';
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
+import { faMinus, faPlus, faTrashCan, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { incrementQuantity, decrementQuantity, removeItem } from '../store/cartSlice';
+import { useRouter } from 'next/navigation'; 
 
 interface CartItem {
   id: number;
@@ -24,6 +26,25 @@ interface CartDialogProps {
 
 const Dialog: React.FC<CartDialogProps> = ({ isOpen, onClose }) => {
   const cart = useSelector((state: RootState) => state.cart);
+  const dispatch = useDispatch();
+  const router = useRouter(); 
+
+  const handleIncrement = (id: number) => {
+    dispatch(incrementQuantity(id));
+  };
+
+  const handleDecrement = (id: number) => {
+    dispatch(decrementQuantity(id));
+  };
+
+  const handleRemoveItem = (id: number) => {
+    dispatch(removeItem({ id }));
+  };
+
+  const handleProceedToCheckout = () => {
+    router.push('/checkout');
+    onClose(); 
+  };
 
   if (!isOpen) return null;
 
@@ -32,24 +53,48 @@ const Dialog: React.FC<CartDialogProps> = ({ isOpen, onClose }) => {
       <div className="bg-white rounded-lg shadow-lg p-6 w-[90%] max-w-lg">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold">Cart Items</h2>
-          <button
-            className="text-gray-600 hover:text-black"
-            onClick={onClose}
-          >
-            <FontAwesomeIcon icon={faShoppingCart} aria-label="Close" />
+          <button className="text-gray-600 hover:text-black" onClick={onClose}>
+            <FontAwesomeIcon icon={faXmark} aria-label="Close" />
           </button>
         </div>
         {cart.length > 0 ? (
           <ul>
             {cart.map((item) => (
               <li key={item.id} className="mb-4 border-b pb-2">
-                <div className="flex items-center">
-                  <img src={item.image} alt={item.name} className="w-16 h-16 object-cover mr-4" />
-                  <div>
-                    <h3 className="font-semibold">{item.name}</h3>
-                    <p>{item.description}</p>
-                    <p className="text-gray-600">${item.price} x {item.quantity}</p>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="w-16 h-16 object-cover mr-4"
+                    />
+                    <div>
+                      <h3 className="font-semibold">{item.name}</h3>
+                      <p>{item.description}</p>
+                      <p className="text-gray-600">${item.price}</p>
+                      <div className="flex items-center mt-2">
+                        <button
+                          className="border border-gray-300 px-2 text-gray-600 hover:text-black"
+                          onClick={() => handleDecrement(item.id)}
+                        >
+                          <FontAwesomeIcon icon={faMinus} aria-label="Decrement" />
+                        </button>
+                        <span className="px-3 font-medium border border-gray-300">{item.quantity}</span>
+                        <button
+                          className="border border-gray-300 px-2 text-gray-600 hover:text-black"
+                          onClick={() => handleIncrement(item.id)}
+                        >
+                          <FontAwesomeIcon icon={faPlus} aria-label="Increment" />
+                        </button>
+                      </div>
+                    </div>
                   </div>
+                  <button
+                    className="text-gray-400 hover:text-black"
+                    onClick={() => handleRemoveItem(item.id)}
+                  >
+                    <FontAwesomeIcon icon={faTrashCan} aria-label="Delete" />
+                  </button>
                 </div>
               </li>
             ))}
@@ -57,12 +102,15 @@ const Dialog: React.FC<CartDialogProps> = ({ isOpen, onClose }) => {
         ) : (
           <p>Your cart is empty.</p>
         )}
-        <button
-          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-          onClick={onClose}
-        >
-          Close
-        </button>
+
+        {cart.length > 0 && (
+          <button
+            className="capitalize mt-4 px-4 py-2 bg-black text-white border hover:bg-white hover:border-black hover:text-black font-bold"
+            onClick={handleProceedToCheckout}
+          >
+            Proceed to Checkout
+          </button>
+        )}
       </div>
     </div>
   );

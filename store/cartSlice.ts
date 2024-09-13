@@ -1,13 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-
 interface CartItem {
   id: number;
   name: string;
   description: string;
   price: number;
   image: string;
-  quantity: number; 
+  quantity: number;
 }
 
 interface AddToCartPayload {
@@ -18,13 +17,11 @@ interface AddToCartPayload {
   image: string;
 }
 
-
 interface RemoveFromCartPayload {
   id: number;
 }
 
 const initialState: CartItem[] = [];
-
 
 const cartSlice = createSlice({
   name: 'cart',
@@ -35,10 +32,10 @@ const cartSlice = createSlice({
       if (itemExists) {
         itemExists.quantity++;
       } else {
-        state.push({ ...action.payload, quantity: 1 }); 
+        state.push({ ...action.payload, quantity: 1 });
       }
     },
-    removeFromCart: (state, action: PayloadAction<RemoveFromCartPayload>) => {
+    removeItem: (state, action: PayloadAction<RemoveFromCartPayload>) => {
       const index = state.findIndex((item) => item.id === action.payload.id);
       if (index !== -1) {
         state.splice(index, 1);
@@ -66,7 +63,7 @@ export const cartReducer = cartSlice.reducer;
 
 export const {
   addToCart,
-  removeFromCart,
+  removeItem,
   incrementQuantity,
   decrementQuantity,
 } = cartSlice.actions;
