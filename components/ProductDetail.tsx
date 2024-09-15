@@ -11,6 +11,7 @@ interface Product {
   description: string;
   price: number;
   image: string;
+  quantity:number;
 }
 
 const ProductDetail: React.FC<{ product: Product }> = ({ product }) => {
@@ -30,6 +31,7 @@ const ProductDetail: React.FC<{ product: Product }> = ({ product }) => {
       description: product.description,
       price: product.price,
       image: product.image,
+      // quantity:product.quantity,
     }));
   };
 

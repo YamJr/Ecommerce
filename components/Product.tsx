@@ -14,7 +14,7 @@ interface ProductData {
 const Product: React.FC<ProductData> = ({ id, name, description, price, image }) => {
   const dispatch = useAppDispatch();
 
-  const product = { id, name, description, price, image };
+  const product = { id, name, description, price, image};
 
   return (
     <div className="relative container my-10 max-w-md group">

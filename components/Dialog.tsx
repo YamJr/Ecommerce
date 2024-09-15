@@ -41,10 +41,17 @@ const Dialog: React.FC<CartDialogProps> = ({ isOpen, onClose }) => {
     dispatch(removeItem({ id }));
   };
 
+  const handleViewProductDetail = (id: number) => {
+    router.push(`/product/${id}`);
+    onClose(); 
+  };
+
   const handleProceedToCheckout = () => {
     router.push('/checkout');
     onClose(); 
   };
+
+  const totalQuantity = cart.reduce((total, item) => total + item.quantity, 0);
 
   if (!isOpen) return null;
 
@@ -52,7 +59,12 @@ const Dialog: React.FC<CartDialogProps> = ({ isOpen, onClose }) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg shadow-lg p-6 w-[90%] max-w-lg">
         <div className="flex items-center justify-between mb-4">
+          <div className='flex items-center'>
           <h2 className="text-xl font-bold">Cart Items</h2>
+          {cart.length > 0 && (
+              <span className="ml-2 text-gray-600 text-sm">({totalQuantity} items)</span>
+            )}
+            </div>
           <button className="text-gray-600 hover:text-black" onClick={onClose}>
             <FontAwesomeIcon icon={faXmark} aria-label="Close" />
           </button>
@@ -67,6 +79,7 @@ const Dialog: React.FC<CartDialogProps> = ({ isOpen, onClose }) => {
                       src={item.image}
                       alt={item.name}
                       className="w-16 h-16 object-cover mr-4"
+                      onClick={() => handleViewProductDetail(item.id)}
                     />
                     <div>
                       <h3 className="font-semibold">{item.name}</h3>

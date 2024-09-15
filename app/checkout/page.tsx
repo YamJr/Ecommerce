@@ -3,55 +3,78 @@ import { useAppDispatch } from '../../store/hook';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useSelector } from 'react-redux'; 
 import { RootState } from '../../store/store';
-import { faTrashCan } from '@fortawesome/free-solid-svg-icons'; 
-import { incrementQuantity, decrementQuantity, removeItem } from '../../store/cartSlice'; 
+import { faTrashCan, faMinus, faPlus } from '@fortawesome/free-solid-svg-icons'; 
+import { incrementQuantity, decrementQuantity, removeItem } from '../../store/cartSlice';
+// import { useRouter } from 'next/navigation'; 
 const CheckoutPage = () => {
   const dispatch = useAppDispatch();
+  // const router = useRouter();
   const cartItems = useSelector((state: RootState) => state.cart);
+  //  const handleContinueShopping = () =>{
+  //     router.push('/HeroSection');
 
+  //  }
   return (
     <div className="container flex flex-col lg:flex-row justify-between py-12">
       <div className="w-full lg:w-3/5 mr-9">
-        <h2 className="text-2xl font-semibold">Checkout</h2>
-        <div className="mt-4">
-          {cartItems.map((item) => (
-            <div key={item.id} className="flex items-center justify-between py-4 border-b">
-              <img src={item.image} alt={item.name} className="w-24 h-24 object-cover" />
-              <div className="flex-1 ml-4">
-                <h3 className="font-semibold">{item.name}</h3>
-                <p className="text-gray-600">{item.description}</p>
-              </div>
-              <select className="border p-2">
-                {/* Map over available sizes */}
-                <option>{item.size || 'Select Size'}</option>
-              </select>
-              <div className="flex items-center">
-                <button
-                  className="text-lg px-2"
-                  onClick={() => dispatch(decrementQuantity(item.id))}
-                >
-                  −
-                </button>
-                <span>{item.quantity}</span>
-                <button
-                  className="text-lg px-2"
-                  onClick={() => dispatch(incrementQuantity(item.id))}
-                >
-                  +
-                </button>
-              </div>
-              <p className="text-lg font-semibold">${item.price}</p>
-              <button
-                className="ml-4 text-gray-400 hover:text-black"
-                onClick={() => dispatch(removeItem({ id: item.id }))}
-              >
-                <FontAwesomeIcon icon={faTrashCan} aria-label="Delete" />
-              </button>
-            </div>
-          ))}
+  <h2 className="text-2xl font-semibold">Checkout</h2>
+  <div className="mt-4">
+    {cartItems.map((item) => (
+      <div key={item.id} className="flex items-center justify-between py-4 border-b">
+        <img src={item.image} alt={item.name} className="w-24 h-24 object-cover" />
+        <div className="flex-1 ml-4">
+          <h3 className="font-semibold">{item.name}</h3>
+          <p className="text-gray-600">{item.description}</p>
         </div>
+        {/* <select className="border p-2">
+          <option>{item.size || 'Select Size'}</option>
+        </select> */}
+        <div className="flex items-center mr-3">
+          <button
+            className="border border-gray-300 px-2 text-gray-600 hover:text-black"
+            onClick={() => dispatch(decrementQuantity(item.id))}
+          >
+            <FontAwesomeIcon icon={faMinus} aria-label="Decrement" />
+          </button>
+          <span className="px-3 font-medium border border-gray-300">{item.quantity}</span>
+          <button
+            className="border border-gray-300 px-2 text-gray-600 hover:text-black"
+            onClick={() => dispatch(incrementQuantity(item.id))}
+          >
+            <FontAwesomeIcon icon={faPlus} aria-label="Increment" />
+          </button>
+        </div>
+        <p className="text-lg font-semibold">${item.price}</p>
+        <button
+          className="ml-4 text-gray-400 hover:text-black"
+          onClick={() => dispatch(removeItem({ id: item.id }))}
+        >
+          <FontAwesomeIcon icon={faTrashCan} aria-label="Delete" />
+        </button>
       </div>
+    ))}
+  </div>
 
+  {cartItems.length > 0 && (
+    <div className="mt-4 flex justify-between items-center border-t pt-4">
+      <h3 className="text-xl font-semibold">Total</h3>
+      <p className="text-lg font-bold">${cartItems.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2)}</p>
+    </div>
+  )}
+
+{cartItems.length > 0&&( 
+  <div className="mt-4 flex justify-between items-center">
+        <li
+          className=" py-2 text-blue-700 underline list-none hover:cursor-pointer"
+          // onClick={handleContinueShopping}
+          >
+          Continue Shopping?
+        </li>
+      </div>
+        )}
+</div>
+
+{cartItems.length > 0&&( 
       <div className="w-full lg:w-2/5 mt-8 lg:mt-0">
   <h3 className="text-xl font-semibold capitalize">Payment Info</h3>
   <div className="p-4 bg-gray-100 rounded-md mt-4">
@@ -112,7 +135,7 @@ const CheckoutPage = () => {
     <button className="bg-black text-white w-full p-3 rounded-md hover:bg-white border hover:text-black hover:border-black">Check Out</button>
   </div>
 </div>
-
+ )}
     </div>
   );
 };

@@ -15,6 +15,7 @@ interface AddToCartPayload {
   description: string;
   price: number;
   image: string;
+  // quantity:number;
 }
 
 interface RemoveFromCartPayload {
