@@ -4,8 +4,8 @@ import { useSelector } from 'react-redux';
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCartShopping, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
-import { faUser } from '@fortawesome/free-regular-svg-icons';
-import Dialog from '../components/Dialog'; 
+import Dialog from './Dialog';
+import LoginDialog from './loginDialog';
 
 interface CartItem {
   id: number;
@@ -22,7 +22,8 @@ interface RootState {
 
 const Navbar = () => {
   const [isMounted, setIsMounted] = useState(false);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isCartDialogOpen, setIsCartDialogOpen] = useState(false);
+  const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
@@ -31,7 +32,19 @@ const Navbar = () => {
   const cartCount = useSelector((state: RootState) => state.cart.length);
 
   const handleCartClick = () => {
-    setIsDialogOpen(!isDialogOpen);
+    setIsCartDialogOpen(true);
+  };
+
+  const handleLoginClick = () => {
+    setIsLoginDialogOpen(true);
+  };
+
+  const closeCartDialog = () => {
+    setIsCartDialogOpen(false);
+  };
+
+  const closeLoginDialog = () => {
+    setIsLoginDialogOpen(false);
   };
 
   if (!isMounted) {
@@ -67,13 +80,24 @@ const Navbar = () => {
               </span>
             )}
           </div>
-          <Link href="/account">
-            <FontAwesomeIcon icon={faUser} aria-label="Account" className="size-4 text-gray-600 hover:text-black" />
-          </Link>
+          <button 
+            className='capitalize bg-black text-white text-sm py-1 border rounded-full px-3 hover:bg-white hover:text-black hover:border-black' 
+            onClick={handleLoginClick}
+          >
+            Login
+          </button>
         </div>
       </nav>
 
-      <Dialog isOpen={isDialogOpen} onClose={() => setIsDialogOpen(false)} />
+      <Dialog 
+        isOpen={isCartDialogOpen} 
+        onClose={closeCartDialog} 
+      />
+      
+      <LoginDialog 
+        isOpen={isLoginDialogOpen} 
+        onClose={closeLoginDialog} 
+      />
     </>
   );
 };
