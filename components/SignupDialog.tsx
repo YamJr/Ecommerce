@@ -1,40 +1,81 @@
 'use client';
+
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGoogle, faFacebook } from '@fortawesome/free-brands-svg-icons';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import { useRouter } from 'next/navigation';
+import { useMutation, gql } from '@apollo/client';
 
 interface SignupDialogProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
+
+const CREATE_CUSTOMER = gql`
+  mutation CreateCustomer(
+    $firstname: String!
+    $lastname: String!
+    $email: String!
+    $password: String!
+  ) {
+    createCustomer(
+      input: {
+        firstname: $firstname
+        lastname: $lastname
+        email: $email
+        password: $password
+      }
+    ) {
+      customer {
+        firstname
+        lastname
+        email
+      }
+    }
+  }
+`;
+
 const SignupDialog: React.FC<SignupDialogProps> = ({ isOpen, onClose }) => {
+  const [firstname, setFirstname] = useState('');
+  const [lastname, setLastname] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const [createCustomer, { loading, error: mutationError }] = useMutation(CREATE_CUSTOMER, {
+    onCompleted: (data) => {
+      console.log('Registration successful:', data);
+      onClose(); 
+      router.push('/'); 
+    },
+  });
+
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+
     if (password !== confirmPassword) {
       setError('Passwords do not match.');
       return;
     }
-    setError(null);
-    console.log('Signing up with', { email, password });
-  
-    onClose(); 
-  };
 
-  const handleSocialLogin = (provider: 'google' | 'facebook') => {
-    
-    if (provider === 'google') {
-      window.location.href = '/api/auth/google'; // for auth setup
-    } else if (provider === 'facebook') {
-      window.location.href = '/api/auth/facebook'; 
+    setError(null); 
+
+    try {
+      console.log('Submitting data:', { firstname, lastname, email, });
+     
+      await createCustomer({
+        variables: {
+          firstname,
+          lastname,
+          email,
+          password,
+        },
+      });
+    } catch (err) {
+      console.error('Error during registration:', err);
     }
   };
 
@@ -50,6 +91,28 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ isOpen, onClose }) => {
           </button>
         </div>
         <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label htmlFor="firstname" className="block text-sm font-medium text-gray-700">First Name</label>
+            <input
+              id="firstname"
+              type="text"
+              value={firstname}
+              onChange={(e) => setFirstname(e.target.value)}
+              required
+              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2"
+            />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="lastname" className="block text-sm font-medium text-gray-700">Last Name</label>
+            <input
+              id="lastname"
+              type="text"
+              value={lastname}
+              onChange={(e) => setLastname(e.target.value)}
+              required
+              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2"
+            />
+          </div>
           <div className="mb-4">
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
             <input
@@ -84,32 +147,15 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ isOpen, onClose }) => {
             />
           </div>
           {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+          {mutationError && <p className="text-red-500 text-sm mb-4">{mutationError.message}</p>}
           <button
             type="submit"
             className="w-full bg-black text-white py-2 px-4 rounded-md border hover:bg-white hover:border-black hover:text-black"
+            disabled={loading} 
           >
-            Sign Up
+            {loading ? 'Signing up...' : 'Sign Up'}
           </button>
         </form>
-        <div className="flex flex-col items-center mt-4 gap-2">
-          <p className="text-sm text-gray-600">Or sign up with:</p>
-          <div className="flex gap-4">
-            <button
-              className="flex items-center bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700"
-              onClick={() => handleSocialLogin('facebook')}
-            >
-              <FontAwesomeIcon icon={faFacebook} className="mr-2" />
-              Facebook
-            </button>
-            <button
-              className="flex items-center bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700"
-              onClick={() => handleSocialLogin('google')}
-            >
-              <FontAwesomeIcon icon={faGoogle} className="mr-2" />
-              Google
-            </button>
-          </div>
-          </div>
       </div>
     </div>
   );

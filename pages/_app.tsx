@@ -1,13 +1,12 @@
+// // pages/_app.js
+// import { ApolloProvider } from '@apollo/client';
+// import client from '../lib/apollo-client';
 
-// import { AppProps } from 'next/app';
-// import { Provider } from 'react-redux';
-// import store from '../store/store'; 
-
-// function MyApp({ Component, pageProps }: AppProps) {
+// function MyApp({ Component, pageProps }) {
 //   return (
-//     <Provider store={store}>
+//     <ApolloProvider client={client}>
 //       <Component {...pageProps} />
-//     </Provider>
+//     </ApolloProvider>
 //   );
 // }
 
